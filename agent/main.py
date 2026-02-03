@@ -1,35 +1,33 @@
-from fastapi import FastAPI, UploadFile, File
-from pydantic import BaseModel
-from agent.graph import app_graph
-from agent.ingestion import ingest_pdfs
-import shutil
-import os
+import uvicorn
+import logging
+from fastapi import FastAPI
+from agent.api.routes import router
+from agent.config.settings import settings
 
-app = FastAPI()
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
-class Query(BaseModel):
-    question: str
-
-@app.post("/ask")
-async def ask_question(query: Query):
-    inputs = {"question": query.question}
-    result = await app_graph.ainvoke(inputs)
-    return {"answer": result["answer"]}
-
-@app.post("/upload")
-async def upload_pdf(file: UploadFile = File(...)):
-    if not os.path.exists("data"):
-        os.makedirs("data")
+def create_app() -> FastAPI:
+    """Application factory for the RAG Agent."""
+    app = FastAPI(
+        title="RAG Agent Pro",
+        description="A production-ready RAG Agent built with LangGraph and Ollama",
+        version="1.0.0"
+    )
     
-    file_path = os.path.join("data", file.filename)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    app.include_router(router)
     
-    # Trigger ingestion only for the new file
-    ingest_pdfs(file_path)
-    
-    return {"message": f"File {file.filename} uploaded and ingested successfully."}
+    return app
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
+app = create_app()
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "agent.main:app",
+        host=settings.APP_HOST,
+        port=settings.APP_PORT,
+        reload=True
+    )
