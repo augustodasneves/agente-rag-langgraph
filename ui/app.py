@@ -20,15 +20,17 @@ theme_colors = {
         'bubble_user': '#2e2e2e',
         'bubble_assistant': '#1a1c23',
         'border': '#3e3e3e',
-        'input_bg': '#262730'
+        'input_bg': '#262730',
+        'sidebar_bg': '#1a1c23'
     },
     'light': {
-        'bg': '#f0f2f6',
-        'text': '#000000',
-        'bubble_user': '#e0e0e0',
+        'bg': '#ffffff',
+        'text': '#1f2937',
+        'bubble_user': '#f3f4f6',
         'bubble_assistant': '#ffffff',
-        'border': '#dddddd',
-        'input_bg': '#ffffff'
+        'border': '#e5e7eb',
+        'input_bg': '#f9fafb',
+        'sidebar_bg': '#f3f4f6'
     }
 }
 
@@ -36,29 +38,37 @@ curr = theme_colors[st.session_state.theme]
 
 st.markdown(f"""
 <style>
-    /* Animações de Fade In */
+    /* Global Reset and Background */
+    .stApp, .main, [data-testid="stHeader"], [data-testid="stAppViewContainer"] {{
+        background-color: {curr['bg']} !important;
+        color: {curr['text']} !important;
+        transition: all 0.3s ease;
+    }}
+
+    /* Text Color for all elements */
+    h1, h2, h3, p, span, div, label, .stMarkdown, [data-testid="stMarkdownContainer"] p {{
+        color: {curr['text']} !important;
+    }}
+
+    /* Animation */
     @keyframes fadeIn {{
         from {{ opacity: 0; transform: translateY(10px); }}
         to {{ opacity: 1; transform: translateY(0); }}
     }}
 
-    .main {{
-        background-color: {curr['bg']};
-        color: {curr['text']};
-        transition: all 0.5s ease;
-    }}
-
+    /* Inputs */
     .stTextInput > div > div > input {{
-        background-color: {curr['input_bg']};
-        color: {curr['text']};
+        background-color: {curr['input_bg']} !important;
+        color: {curr['text']} !important;
         border-radius: 10px;
-        border: 1px solid {curr['border']};
+        border: 1px solid {curr['border']} !important;
     }}
 
+    /* Buttons */
     .stButton > button {{
         border-radius: 10px;
         background: linear-gradient(45deg, #4b6cb7, #182848);
-        color: white;
+        color: white !important;
         border: none;
         padding: 0.5rem 2rem;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -69,31 +79,31 @@ st.markdown(f"""
         box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }}
 
+    /* Chat Bubbles */
     .chat-bubble {{
         padding: 1.5rem;
         border-radius: 15px;
         margin-bottom: 1rem;
         max-width: 85%;
         animation: fadeIn 0.4s ease-out;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         line-height: 1.6;
+        border: 1px solid {curr['border']};
     }}
 
     .user-bubble {{
-        background-color: {curr['bubble_user']};
+        background-color: {curr['bubble_user']} !important;
         margin-left: auto;
         border-bottom-right-radius: 2px;
-        color: {curr['text']};
     }}
 
     .assistant-bubble {{
-        background-color: {curr['bubble_assistant']};
-        border: 1px solid {curr['border']};
+        background-color: {curr['bubble_assistant']} !important;
         margin-right: auto;
         border-bottom-left-radius: 2px;
-        color: {curr['text']};
     }}
 
+    /* Titles */
     .title-gradient {{
         background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
         -webkit-background-clip: text;
@@ -102,14 +112,26 @@ st.markdown(f"""
         font-weight: 800;
         text-align: center;
         margin-bottom: 1rem;
-        animation: fadeIn 0.8s ease-in;
     }}
 
-    /* Estilização da Sidebar */
-    [data-testid="stSidebar"] {{
-        background-color: {curr['bubble_assistant']};
-        border-right: 1px solid {curr['border']};
+    /* Sidebar Fixes */
+    [data-testid="stSidebar"], [data-testid="stSidebarNav"] {{
+        background-color: {curr['sidebar_bg']} !important;
+        border-right: 1px solid {curr['border']} !important;
     }}
+    
+    [data-testid="stSidebar"] * {{
+        color: {curr['text']} !important;
+    }}
+
+    /* Chat Input Fixed at Bottom */
+    [data-testid="stChatInput"] {{
+        background-color: {curr['bg']} !important;
+    }}
+
+    /* Hide Default Streamlit Style */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
 </style>
 """, unsafe_allow_html=True)
 
