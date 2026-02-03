@@ -1,0 +1,14 @@
+langgraph
+langchain
+langchain-ollama
+langchain-postgres
+langchain-community
+psycopg2-binary
+pgvector
+pypdf
+streamlit
+python-dotenv
+fastapi
+uvicorn
+pandas
+python-multipart
