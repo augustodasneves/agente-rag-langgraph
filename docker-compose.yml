@@ -4,15 +4,15 @@ services:
     container_name: postgres_vector
     restart: always
     environment:
-      POSTGRES_DB: rag_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB:-rag_db}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     ports:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d rag_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-rag_db}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -42,7 +42,7 @@ services:
       ollama-rag:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/rag_db
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-rag_db}
       - OLLAMA_BASE_URL=http://ollama-rag:11434
       - LLM_MODEL=llama3.2
     volumes:

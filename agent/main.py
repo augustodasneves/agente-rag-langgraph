@@ -10,12 +10,23 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
 def create_app() -> FastAPI:
     """Application factory for the RAG Agent."""
     app = FastAPI(
         title="RAG Agent Pro",
         description="A production-ready RAG Agent built with LangGraph and Ollama",
         version="1.0.0"
+    )
+    
+    # Configure CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
     
     app.include_router(router)

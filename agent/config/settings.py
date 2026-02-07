@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     # API Settings
     APP_HOST: str = Field(default="0.0.0.0")
     APP_PORT: int = Field(default=8000)
+    
+    # Security Settings
+    MAX_UPLOAD_SIZE: int = Field(default=10 * 1024 * 1024)  # 10MB
+    ALLOWED_ORIGINS: list[str] = Field(default=["*"])
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
