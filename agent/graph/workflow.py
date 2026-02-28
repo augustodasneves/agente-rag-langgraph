@@ -20,21 +20,31 @@ class RAGWorkflow:
         self.llm = ChatOllama(
             model=settings.LLM_MODEL,
             base_url=settings.OLLAMA_BASE_URL,
-            temperature=0.2,
+            temperature=0.3,  # Máxima previsibilidade, essencial para RAG
+            repeat_penalty=1.1, # Evita frases repetitivas
             num_predict=1024,
+            top_p=0.1,      # Restringe mais a variabilidade do vocabulário
+            num_ctx=4096,  # Opcional: Garante janela de contexto suficiente
         )
-        self.prompt = ChatPromptTemplate.from_template("""
-        Você é um assistente especialista em análise de documentos. 
-        Use os trechos de contexto abaixo para responder à pergunta de forma detalhada e organizada.
-        
-        CONTEXTO:
-        {context}
-        
-        PERGUNTA: 
-        {question} 
-        
-        RESPOSTA DETALHADA:
-        """)
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", """Você é um assistente especialista em análise de documentos, rigoroso e objetivo.
+            Sua missão é extrair informações do contexto fornecido de forma clara e detalhada.
+            
+            REGRAS CRÍTICAS:
+            1. Use EXCLUSIVAMENTE o contexto fornecido para responder.
+            2. JAMAIS use seu conhecimento prévio que não esteja no contexto.
+            3. Se o contexto for vago, mas houver uma resposta parcial, forneça-a mencionando o que falta.
+            4. Cite ou mencione partes do texto se necessário, mas mantenha a resposta organizada."""),
+            ("human", """
+            Aqui está o CONTEXTO:
+            {context}
+            
+            Com base no contexto acima, responda à seguinte PERGUNTA: 
+            {question} 
+            
+            RESPOSTA DETALHADA:
+            """)
+        ])
 
     def retrieve(self, state: AgentState) -> Dict[str, Any]:
         """Node: Retrieve relevant documents."""
@@ -46,7 +56,7 @@ class RAGWorkflow:
         """Node: Generate answer from context."""
         logger.info("Generating answer.")
         if not state["documents"]:
-            return {"answer": "Desculpe, não encontrei nenhum documento relevante para responder a essa pergunta."}
+            return {"answer": "Desculpe, não foram encontrados documentos carregados para consulta ou a busca não retornou dados relevantes."}
 
         context = "\n\n".join(state["documents"])
         chain = self.prompt | self.llm

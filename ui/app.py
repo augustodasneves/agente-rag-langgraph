@@ -38,100 +38,124 @@ curr = theme_colors[st.session_state.theme]
 
 st.markdown(f"""
 <style>
-    /* Global Reset and Background */
-    .stApp, .main, [data-testid="stHeader"], [data-testid="stAppViewContainer"] {{
+    /* Global Background and Basic Font Color */
+    html, body, .stApp, [data-testid="stAppViewContainer"] {{
         background-color: {curr['bg']} !important;
         color: {curr['text']} !important;
-        transition: all 0.3s ease;
+        transition: background-color 0.3s ease, color 0.3s ease;
     }}
 
-    /* Text Color for all elements */
-    h1, h2, h3, p, span, div, label, .stMarkdown, [data-testid="stMarkdownContainer"] p {{
+    /* Target every possible main container */
+    [data-testid="stMain"], 
+    [data-testid="stHeader"], 
+    [data-testid="stAppViewBlockContainer"],
+    [data-testid="stVerticalBlock"] {{
+        background-color: {curr['bg']} !important;
+    }}
+
+    /* Force text color on everything including nested spans and labels */
+    .stApp *, [data-testid="stWidgetLabel"] p, [data-testid="stMarkdownContainer"] p, 
+    span, label, p, h1, h2, h3, h4, h5, h6, small {{
         color: {curr['text']} !important;
     }}
 
-    /* Animation */
-    @keyframes fadeIn {{
-        from {{ opacity: 0; transform: translateY(10px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {{
+        background-color: {curr['sidebar_bg']} !important;
+        border-right: 1px solid {curr['border']} !important;
+    }}
+    
+    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+    [data-testid="stSidebar"] p, 
+    [data-testid="stSidebar"] h1, 
+    [data-testid="stSidebar"] h2 {{
+        color: {curr['text']} !important;
     }}
 
-    /* Inputs */
-    .stTextInput > div > div > input {{
+    /* Input Fields */
+    .stTextInput input, .stSelectbox div, .stTextArea textarea {{
         background-color: {curr['input_bg']} !important;
         color: {curr['text']} !important;
-        border-radius: 10px;
+        border: 1px solid {curr['border']} !important;
+        border-radius: 8px !important;
+    }}
+
+    /* Chat Input Fixed at the bottom */
+    [data-testid="stChatInput"] {{
+        background-color: {curr['bg']} !important;
+        border-top: 1px solid {curr['border']} !important;
+        padding-bottom: 20px !important;
+    }}
+    
+    [data-testid="stChatInput"] textarea {{
+        background-color: {curr['input_bg']} !important;
+        color: {curr['text']} !important;
         border: 1px solid {curr['border']} !important;
     }}
 
     /* Buttons */
     .stButton > button {{
-        border-radius: 10px;
+        border-radius: 12px;
         background: linear-gradient(45deg, #4b6cb7, #182848);
         color: white !important;
         border: none;
-        padding: 0.5rem 2rem;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        padding: 0.6rem 2.2rem;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }}
 
     .stButton > button:hover {{
-        transform: scale(1.05);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        background: linear-gradient(45deg, #5c7dd8, #2a3d66);
     }}
 
-    /* Chat Bubbles */
+    /* Custom Chat Bubbles */
     .chat-bubble {{
-        padding: 1.5rem;
-        border-radius: 15px;
-        margin-bottom: 1rem;
+        padding: 1.2rem;
+        border-radius: 18px;
+        margin-bottom: 1.2rem;
         max-width: 85%;
-        animation: fadeIn 0.4s ease-out;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         line-height: 1.6;
         border: 1px solid {curr['border']};
+        animation: fadeIn 0.5s ease-out;
+    }}
+
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: translateY(15px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
     }}
 
     .user-bubble {{
         background-color: {curr['bubble_user']} !important;
         margin-left: auto;
-        border-bottom-right-radius: 2px;
+        border-bottom-right-radius: 4px;
     }}
 
     .assistant-bubble {{
         background-color: {curr['bubble_assistant']} !important;
         margin-right: auto;
-        border-bottom-left-radius: 2px;
+        border-bottom-left-radius: 4px;
     }}
 
-    /* Titles */
+    /* Title Styling */
     .title-gradient {{
         background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 800;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        letter-spacing: -1px;
     }}
 
-    /* Sidebar Fixes */
-    [data-testid="stSidebar"], [data-testid="stSidebarNav"] {{
-        background-color: {curr['sidebar_bg']} !important;
-        border-right: 1px solid {curr['border']} !important;
-    }}
-    
-    [data-testid="stSidebar"] * {{
-        color: {curr['text']} !important;
-    }}
-
-    /* Chat Input Fixed at Bottom */
-    [data-testid="stChatInput"] {{
-        background-color: {curr['bg']} !important;
-    }}
-
-    /* Hide Default Streamlit Style */
+    /* Clean UI */
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
+    [data-testid="stHeader"] {{background-color: transparent !important;}}
 </style>
 """, unsafe_allow_html=True)
 
