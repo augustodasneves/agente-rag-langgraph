@@ -15,123 +15,145 @@ def toggle_theme():
 # CSS Dinâmico com Animações Premium
 theme_colors = {
     'dark': {
-        'bg': '#0e1117',
+        'bg': '#121212',
+        'secondary_bg': '#1e1e1e',
         'text': '#ffffff',
-        'bubble_user': '#2e2e2e',
-        'bubble_assistant': '#1a1c23',
-        'border': '#3e3e3e',
-        'input_bg': '#262730',
-        'sidebar_bg': '#1a1c23'
+        'text_dim': '#b0b0b0',
+        'accent': '#6366f1',
+        'border': '#333333',
+        'input_bg': '#252525',
+        'bubble_user': '#312e81',
+        'bubble_assistant': '#1e1e1e',
+        'upload_bg': '#252525'
     },
     'light': {
         'bg': '#ffffff',
+        'secondary_bg': '#f3f4f6',
         'text': '#1f2937',
-        'bubble_user': '#f3f4f6',
-        'bubble_assistant': '#ffffff',
+        'text_dim': '#6b7280',
+        'accent': '#4f46e5',
         'border': '#e5e7eb',
-        'input_bg': '#f9fafb',
-        'sidebar_bg': '#f3f4f6'
+        'input_bg': '#ffffff',
+        'bubble_user': '#eff6ff',
+        'bubble_assistant': '#f9fafb',
+        'upload_bg': '#f3f4f6'
     }
 }
 
 curr = theme_colors[st.session_state.theme]
 
+# CSS de "Força Bruta" para domar o layout do Streamlit
 st.markdown(f"""
 <style>
-    /* Global Background and Basic Font Color */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@800&display=swap');
+
+    /* 1. Global Reset & Body */
     html, body, .stApp, [data-testid="stAppViewContainer"] {{
         background-color: {curr['bg']} !important;
         color: {curr['text']} !important;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        font-family: 'Inter', sans-serif !important;
     }}
 
-    /* Target every possible main container */
+    /* 2. Main Containers Visibility Fix */
     [data-testid="stMain"], 
     [data-testid="stHeader"], 
     [data-testid="stAppViewBlockContainer"],
-    [data-testid="stVerticalBlock"] {{
-        background-color: {curr['bg']} !important;
-    }}
-
-    /* Force text color on everything including nested spans and labels */
-    .stApp *, [data-testid="stWidgetLabel"] p, [data-testid="stMarkdownContainer"] p, 
-    span, label, p, h1, h2, h3, h4, h5, h6, small {{
+    [data-testid="stVerticalBlock"],
+    [data-testid="stHorizontalBlock"],
+    [data-testid="stElementContainer"] {{
+        background-color: transparent !important;
         color: {curr['text']} !important;
     }}
 
-    /* Sidebar Styling */
+    /* 3. Exhaustive Global Text Color */
+    p, span, label, li, h1, h2, h3, h4, 
+    small, .stMarkdown, [data-testid="stMarkdownContainer"] p,
+    [data-testid="stWidgetLabel"] p, .stCaption {{
+        color: {curr['text']} !important;
+    }}
+
+    /* 4. Sidebar Fixing */
     [data-testid="stSidebar"] {{
-        background-color: {curr['sidebar_bg']} !important;
+        background-color: {curr['secondary_bg']} !important;
         border-right: 1px solid {curr['border']} !important;
+        width: 350px !important;
     }}
     
-    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
-    [data-testid="stSidebar"] p, 
-    [data-testid="stSidebar"] h1, 
-    [data-testid="stSidebar"] h2 {{
-        color: {curr['text']} !important;
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
+        padding-top: 2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }}
 
-    /* Input Fields */
-    .stTextInput input, .stSelectbox div, .stTextArea textarea {{
-        background-color: {curr['input_bg']} !important;
-        color: {curr['text']} !important;
-        border: 1px solid {curr['border']} !important;
-        border-radius: 8px !important;
+    /* 5. FILE UPLOADER - Total Correction */
+    [data-testid="stFileUploadDropzone"] {{
+        background-color: {curr['upload_bg']} !important;
+        border: 2px dashed {curr['border']} !important;
+        border-radius: 12px !important;
+        padding: 2rem !important;
     }}
 
-    /* Chat Input Fixed at the bottom */
+    /* Estilo dos textos internos do uploader */
+    [data-testid="stFileUploadDropzone"] div, 
+    [data-testid="stFileUploadDropzone"] span,
+    [data-testid="stFileUploadDropzone"] p {{
+        color: {curr['text']} !important;
+    }}
+    
+    [data-testid="stFileUploaderFileName"] {{
+        color: {curr['text']} !important;
+        font-weight: 600;
+    }}
+
+    /* 6. CHAT INPUT - Fixing the "Black Block" */
+    /* Target the literal bottom bar container */
     [data-testid="stChatInput"] {{
         background-color: {curr['bg']} !important;
         border-top: 1px solid {curr['border']} !important;
-        padding-bottom: 20px !important;
+        padding: 2rem !important;
+        margin-bottom: 0px !important;
     }}
     
+    /* Target the wrapper around the input */
+    footer + div, [data-testid="stAppViewContainer"] > section:last-child {{
+        background-color: {curr['bg']} !important;
+    }}
+
     [data-testid="stChatInput"] textarea {{
         background-color: {curr['input_bg']} !important;
         color: {curr['text']} !important;
         border: 1px solid {curr['border']} !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
     }}
 
-    /* Buttons */
+    /* 7. Buttons */
     .stButton > button {{
-        border-radius: 12px;
-        background: linear-gradient(45deg, #4b6cb7, #182848);
+        width: 100%;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
         color: white !important;
-        border: none;
-        padding: 0.6rem 2.2rem;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: none !important;
+        padding: 0.6rem !important;
+        font-weight: 600 !important;
     }}
 
-    .stButton > button:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        background: linear-gradient(45deg, #5c7dd8, #2a3d66);
-    }}
-
-    /* Custom Chat Bubbles */
+    /* 8. Chat Bubbles */
     .chat-bubble {{
         padding: 1.2rem;
         border-radius: 18px;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
         max-width: 85%;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        line-height: 1.6;
         border: 1px solid {curr['border']};
-        animation: fadeIn 0.5s ease-out;
-    }}
-
-    @keyframes fadeIn {{
-        from {{ opacity: 0; transform: translateY(15px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
+        line-height: 1.6;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }}
 
     .user-bubble {{
         background-color: {curr['bubble_user']} !important;
         margin-left: auto;
         border-bottom-right-radius: 4px;
+        color: { '#ffffff' if st.session_state.theme == 'dark' else curr['text'] } !important;
     }}
 
     .assistant-bubble {{
@@ -140,19 +162,19 @@ st.markdown(f"""
         border-bottom-left-radius: 4px;
     }}
 
-    /* Title Styling */
+    /* 9. Title Style */
     .title-gradient {{
-        background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        background: linear-gradient(to right, #6366f1, #a855f7);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 3.5rem;
         font-weight: 800;
         text-align: center;
-        margin-bottom: 1.5rem;
-        letter-spacing: -1px;
+        margin-bottom: 2rem;
+        font-family: 'Outfit', sans-serif;
     }}
 
-    /* Clean UI */
+    /* 10. Hide default elements */
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     [data-testid="stHeader"] {{background-color: transparent !important;}}
